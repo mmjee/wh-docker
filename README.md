@@ -3,6 +3,7 @@
 #### How To Use
 
 ```shell
+git clone --recurse-submodules --depth 1 https://github.com/mmjee/wh-docker.git
 $EDITOR docker-compose.yml
 $EDITOR redis.conf
 docker-compose up -d

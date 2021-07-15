@@ -1,0 +1,52 @@
+version: "2"
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: warehouse
+      MONGO_INITDB_ROOT_PASSWORD: CHANGEME
+    volumes:
+      - ./data/mongodb:/data/db
+
+  redis:
+    image: redis
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+      - ./redis.conf:/etc/redis/redis.conf
+
+  backend:
+    build:
+      context: ./wh-back
+    environment:
+      - WH_MONGODB_URL=mongodb://warehouse:CHANGEME@mongo
+      - WH_REDIS_URL=redis://:CHANGEMECHANGEMECHANGEME@redis
+    volumes:
+      - ./config.json5:/usr/src/app/config.json5
+    ports:
+      - 3000:3000
+
+  frontend:
+    build:
+      context: ./wh-front
+    ports:
+    # You might want to reverse proxy this, or might not want to do this at all, see wh-front/Dockerfile and wh-front/docker/nginx.conf
+    # From a perimeter server you can reverse proxy / to 3001 and /api to 3000
+    # Or even better, use IPv6 natively and make both wh-front and wh-back listen on 443 and use something like Cloudflare (both wh-back and wh-front need adjustments to listen on HTTPS)
+      - 3001:3001
+    # NOTE: To add IPv6 support, you need to statically assign an IP address to frontend and delegate a IPv6 prefix to the internal network
+    # networks:
+    #      default:
+    #        ipv6_address: IPV6_ADDRESS_FROM_THE_DELEGATION
+
+#networks:
+#  default:
+#    enable_ipv6: true
+#    driver: bridge
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: YOUR_IPV6_DELEGATION/120
+#          gateway: GATEWAY_ADDRESS_TYPICALLY_FIRST_ADDRESS_OF_THE_DELEGATION

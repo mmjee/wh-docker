@@ -1,0 +1,6 @@
+[submodule "wh-back"]
+	path = wh-back
+	url = https://github.com/mmjee/wh-back.git
+[submodule "wh-front"]
+	path = wh-front
+	url = https://github.com/mmjee/wh-front.git

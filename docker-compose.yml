@@ -12,6 +12,7 @@ services:
 
   redis:
     image: redis
+    entrypoint: redis-server /etc/redis/redis.conf
     restart: unless-stopped
     volumes:
       - ./data/redis:/data
